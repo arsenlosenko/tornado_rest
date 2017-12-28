@@ -7,9 +7,9 @@
     <body>
         <div class="jumbotron">
             Usage of the API:</br>
-            <a href="/api/v1/books/" onclick="printResponse()">/api/v1/books/</a> - get info about books<br>
-            <a href="/api/v1/prices/" onclick="printResponse()">/api/v1/prices/</a> - get info about prices<br>
-            <textarea id="printResponse"></textarea><br>
+            <a href="/api/v1/books/" onclick="printResponse(this.href)">/api/v1/books/</a> - get info about books<br>
+            <a href="/api/v1/prices/" onclick="printResponse(this.href)">/api/v1/prices/</a> - get info about prices<br>
+            <textarea id="responseArea"></textarea><br>
         </div>
         <script src="../static/client.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
