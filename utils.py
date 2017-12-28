@@ -17,3 +17,21 @@ def psql_connection(func):
         return value
 
     return wrapper
+
+
+@psql_connection
+def update_books(cur, book, author):
+    cur.execute("insert into books (book, author) values ('{}', '{}')".format(book, author))
+    cur.execute("insert into prices (book) values ('{}')".format(book))
+
+
+@psql_connection
+def update_prices(cur, book, price):
+    cur.execute("insert into prices (book, price) values ('{}', '{}')".format(book, price))
+
+
+@psql_connection
+def get_db_info(cur, table):
+    cur.execute("select * from {};".format(table))
+    return cur.fetchall()
+
