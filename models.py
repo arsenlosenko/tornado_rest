@@ -21,5 +21,5 @@ class Price(db.Model):
 class Message(db.Model):
     __tablename__ = 'messages'
     id = db.Column(db.Integer(), primary_key=True)
-    date = db.Column(db.Time())
+    date = db.Column(db.Date)
     text = db.Column(db.Unicode(), default="none")

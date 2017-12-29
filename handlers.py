@@ -1,3 +1,4 @@
+import datetime
 from tornado.websocket import WebSocketHandler
 from gino.ext.tornado import GinoRequestHandler
 from models import Book, Price, Message
@@ -64,7 +65,7 @@ class SocketHandler(WebSocketHandler):
         print("WebSocket opened")
 
     async def on_message(self, message):
-        await Message.create(text=message)
+        await Message.create(text=message, date=datetime.datetime.now())
         self.write_message(message)
 
     def on_close(self):
