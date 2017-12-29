@@ -1,53 +1,46 @@
 #!/usr/bin/env python3
 
-from tornado.web import RequestHandler
-from utils import DBConnect
+from models import Book, Price
+from gino.ext.tornado import GinoRequestHandler
 
 
-class MainHandler(RequestHandler):
+class MainHandler(GinoRequestHandler):
     def get(self):
         self.render("index.html")
 
 
-class BooksHandler(RequestHandler, DBConnect):
-    def get(self):
-        response = self.format_response()
+class BooksHandler(GinoRequestHandler):
+    async def get(self):
+        response = {"info": [],
+                    "ref": "/api/v1/books/"}
+        books = await Book.query.gino.all()
+        for book in books:
+            response['info'].append({"id": book.id, "book": book.book, "author": book.author})
         self.write(response)
 
-    def post(self):
+    async def post(self):
         book = self.get_body_argument("book")
         author = self.get_body_argument("author")
         if book and author:
-            self.insert_book(book, author)
+            await Book.create(book=book, author=author)
             self.write({"status": "added new price",
                         "status_code": 201})
 
-    def format_response(self):
-        books = self.get_db_info("books")
+
+class PricesHandler(GinoRequestHandler):
+    async def get(self):
         response = {"info": [],
-                    "ref": "/api/v1/books"}
-        for book in books:
-            response['info'].append({"id": book[0], "book": book[1], "author": book[2]})
-        return response
-
-
-class PricesHandler(RequestHandler, DBConnect):
-    def get(self):
-        response = self.format_response()
+                    "ref": "/api/v1/prices/"}
+        prices = await Price.query.gino.all()
+        for price in prices:
+            response['info'].append({"id": price.id, "book": price.book, "price": price.price})
         self.write(response)
 
-    def post(self):
+    async def post(self):
         book = self.get_body_argument("book")
         price = self.get_body_argument("price")
         if book and price:
-            self.insert_price(book, price)
+            await Price.create(book=book, price=price)
             self.write({"status": "added new price",
                         "status_code": 201})
 
-    def format_response(self):
-        prices = self.get_db_info("prices")
-        response = {"prices": [],
-                    "ref": "/api/v1/prices"}
-        for price in prices:
-            response['prices'].append({"id": price[0], "book": price[1], "price": price[2]})
-        return response
