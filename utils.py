@@ -1,37 +1,34 @@
 #!/usr/bin/env python3
 
 import psycopg2
-from config import DB_NAME, DB_HOST, DB_USER, DB_PASS
+from tornado.options import options, define, parse_config_file
 
 
-def psql_connection(func):
-    def wrapper(*args):
-        connection = psycopg2.connect(
-            "dbname='{0}' user='{1}' password='{2}' host={3}".format(DB_NAME, DB_USER, DB_PASS, DB_HOST))
-        cur = connection.cursor()
+class DBConnect(object):
+    def __init__(self):
+        define("DB_NAME", type=str)
+        define("DB_HOST", type=str)
+        define("DB_USER", type=str)
+        define("DB_PASS", type=str)
+        parse_config_file("config.py")
+        self.dbname = options.DB_NAME
+        self.dbhost = options.DB_HOST
+        self.dbuser = options.DB_USER
+        self.dbpass = options.DB_PASS
+        self.connection = psycopg2.connect("dbname='{0}' user='{1}' password='{2}' host={3}"
+                                           "".format(self.dbname, self.dbuser, self.dbpass, self.dbhost))
+        self.cur = self.connection.cursor()
 
-        value = func(cur, *args)
+    def get_db_info(self, table):
+        self.cur.execute("select * from {};".format(table))
+        return self.cur.fetchall()
 
-        connection.commit()
-        connection.close()
-        return value
+    def insert_book(self, book, author):
+        self.cur.execute("insert into books (book, author) values ('{}', '{}')".format(book, author))
+        self.cur.execute("insert into prices (book) values ('{}')".format(book))
+        self.connection.commit()
 
-    return wrapper
-
-
-@psql_connection
-def update_books(cur, book, author):
-    cur.execute("insert into books (book, author) values ('{}', '{}')".format(book, author))
-    cur.execute("insert into prices (book) values ('{}')".format(book))
-
-
-@psql_connection
-def update_prices(cur, book, price):
-    cur.execute("insert into prices (book, price) values ('{}', '{}')".format(book, price))
-
-
-@psql_connection
-def get_db_info(cur, table):
-    cur.execute("select * from {};".format(table))
-    return cur.fetchall()
+    def insert_price(self, book, price):
+        self.cur.execute("insert into prices (book, price) values ('{}', '{}')".format(book, price))
+        self.connection.commit()
 

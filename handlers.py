@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from tornado.web import RequestHandler
-from utils import update_books, update_prices, get_db_info
+from utils import DBConnect
 
 
 class MainHandler(RequestHandler):
@@ -9,7 +9,7 @@ class MainHandler(RequestHandler):
         self.render("index.html")
 
 
-class BooksHandler(RequestHandler):
+class BooksHandler(RequestHandler, DBConnect):
     def get(self):
         response = self.format_response()
         self.write(response)
@@ -18,12 +18,12 @@ class BooksHandler(RequestHandler):
         book = self.get_body_argument("book")
         author = self.get_body_argument("author")
         if book and author:
-            update_books(book, author)
+            self.insert_book(book, author)
             self.write({"status": "added new price",
                         "status_code": 201})
 
     def format_response(self):
-        books = get_db_info("books")
+        books = self.get_db_info("books")
         response = {"info": [],
                     "ref": "/api/v1/books"}
         for book in books:
@@ -31,7 +31,7 @@ class BooksHandler(RequestHandler):
         return response
 
 
-class PricesHandler(RequestHandler):
+class PricesHandler(RequestHandler, DBConnect):
     def get(self):
         response = self.format_response()
         self.write(response)
@@ -40,12 +40,12 @@ class PricesHandler(RequestHandler):
         book = self.get_body_argument("book")
         price = self.get_body_argument("price")
         if book and price:
-            update_prices(book, price)
+            self.insert_price(book, price)
             self.write({"status": "added new price",
                         "status_code": 201})
 
     def format_response(self):
-        prices = get_db_info("prices")
+        prices = self.get_db_info("prices")
         response = {"prices": [],
                     "ref": "/api/v1/prices"}
         for price in prices:

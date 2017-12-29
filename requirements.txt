@@ -1,2 +1,5 @@
+asyncpg==0.13.0
+gino==0.5.7
 psycopg2==2.7.1
+SQLAlchemy==1.1.15
 tornado==4.5.2
