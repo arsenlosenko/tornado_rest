@@ -16,3 +16,10 @@ class Price(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     book = db.Column(db.Unicode(), default='none')
     price = db.Column(db.Integer(), default=0)
+
+
+class Message(db.Model):
+    __tablename__ = 'messages'
+    id = db.Column(db.Integer(), primary_key=True)
+    date = db.Column(db.Time())
+    text = db.Column(db.Unicode(), default="none")

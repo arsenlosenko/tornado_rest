@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-
-from tornado.log import LogFormatter
 from tornado.ioloop import IOLoop
+from tornado.log import LogFormatter
 from tornado.options import options, define, parse_config_file
-from handlers import MainHandler, BooksHandler, PricesHandler
 from gino.ext.tornado import Application
 from models import db
+from handlers import MainHandler, BooksHandler, PricesHandler, SocketHandler, MessagesHandler
 
 
 def main():
@@ -18,7 +16,9 @@ def main():
     routes = [
             (r"/", MainHandler),
             (r"/api/v1/books/", BooksHandler),
-            (r"/api/v1/prices/", PricesHandler)
+            (r"/api/v1/prices/", PricesHandler),
+            (r"/api/v1/messages/", MessagesHandler),
+            (r"/websocket", SocketHandler)
         ]
     settings = options.settings
 
