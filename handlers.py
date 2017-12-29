@@ -17,10 +17,10 @@ class BooksHandler(RequestHandler):
     def post(self):
         book = self.get_body_argument("book")
         author = self.get_body_argument("author")
-        if (book and type(book) == str) \
-        and (author and type(author) == str):
+        if book and author:
             update_books(book, author)
-            self.write({"status_code": 201})
+            self.write({"status": "added new price",
+                        "status_code": 201})
 
     def format_response(self):
         books = get_db_info("books")
@@ -39,10 +39,10 @@ class PricesHandler(RequestHandler):
     def post(self):
         book = self.get_body_argument("book")
         price = self.get_body_argument("price")
-        if (book and type(book) == str) \
-        and (price and type(price) == str):
+        if book and price:
             update_prices(book, price)
-            self.write({"status_code": 201})
+            self.write({"status": "added new price",
+                        "status_code": 201})
 
     def format_response(self):
         prices = get_db_info("prices")
